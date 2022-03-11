@@ -36,7 +36,7 @@ public class PersonaController {
 //        ObjectMapper mapper = new ObjectMapper();
 //        mapper.reader().forType(RequestPersona.class).readValue(personaService.create(persona,request));
 //        return
-        return personaService.create(persona,request);
+        return ResponseEntity.ok(personaService.create(persona,request));
     }
 
 }

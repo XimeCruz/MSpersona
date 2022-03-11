@@ -4,10 +4,8 @@ package com.example.ms_persona.repository;
 import com.example.ms_persona.beans.RequestPersona;
 import com.example.ms_persona.beans.ResponseData;
 import com.example.ms_persona.beans.ResponsePersona;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +15,7 @@ public class PersonaRepository {
 
 
 
-    public ResponseEntity<ResponseData> personCreate(RequestPersona persona, HttpServletRequest request) {
+    public ResponseData personCreate(RequestPersona persona, HttpServletRequest request) {
         final String CONTENT_TYPE = "Content-Type";
 
         /**
@@ -78,7 +76,7 @@ public class PersonaRepository {
             data=response.getBody();
         }
         ResponsePersona responsePersona= new ResponsePersona();
-        return ResponseEntity.ok(data);
+        return data;
 
 
     }
