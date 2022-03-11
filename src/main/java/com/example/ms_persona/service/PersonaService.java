@@ -1,20 +1,23 @@
 package com.example.ms_persona.service;
 
-import com.example.ms_persona.beans.BaniPayBean;
 import com.example.ms_persona.beans.RequestPersona;
-import com.example.ms_persona.repository.IPersonaRepository;
+import com.example.ms_persona.beans.ResponseData;
 import com.example.ms_persona.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class PersonaService implements IPersonaRepository {
+@Service
+public class PersonaService {
 
     @Autowired
     private PersonaRepository personaRepository;
 
-    @Override
-    public BaniPayBean create(RequestPersona persona, HttpServletRequest request) {
+    public ResponseEntity<ResponseData> create(RequestPersona persona, HttpServletRequest request) {
+
+
         return personaRepository.personCreate(persona,request);
     }
 }

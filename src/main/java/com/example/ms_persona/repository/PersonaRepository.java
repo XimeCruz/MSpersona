@@ -1,17 +1,23 @@
 package com.example.ms_persona.repository;
 
-import com.example.ms_persona.beans.BaniPayBean;
+
 import com.example.ms_persona.beans.RequestPersona;
+import com.example.ms_persona.beans.ResponseData;
+import com.example.ms_persona.beans.ResponsePersona;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.*;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class PersonaRepository implements IPersonaRepository {
+@Repository
+public class PersonaRepository {
 
-    @Override
-    public BaniPayBean create(RequestPersona persona, HttpServletRequest request) {
+
+
+    public ResponseEntity<ResponseData> personCreate(RequestPersona persona, HttpServletRequest request) {
         final String CONTENT_TYPE = "Content-Type";
 
         /**
@@ -30,8 +36,8 @@ public class PersonaRepository implements IPersonaRepository {
         /*
          * Se setean los encabezados
          */
-        headersSolicitud.add(CONTENT_TYPE,MediaType.G);
-        headersSolicitud.add(CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+        RestTemplate restTemplate = new RestTemplate();
+        headersSolicitud.add(CONTENT_TYPE, "application/graphql");
         headersSolicitud.add(ACCEPT, MediaType.APPLICATION_JSON.toString());
         /**
          * Se setean los encabezados
@@ -40,35 +46,40 @@ public class PersonaRepository implements IPersonaRepository {
         /*
          * Se instancia a la clase restTemplate
          */
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<RequestPersona> httpTokenService = new HttpEntity<>(persona, headersSolicitud);
+        String query="mutation {\n" +
+                "\tregistrarPersona(\n" +
+                "\t\tnombre:"+persona.getNombre()+"\",\n"+
+                "\t\tcorreo: \""+persona.getCorreo()+"\",\n"+
+                "\t\tapellidoPaterno:"+ persona.getApellidoPaterno()+"\",\n"+
+                "\t\tapellidoMaterno:"+ persona.getApellidoMaterno()+"\",\n"+
+                "\t\tfechaNacimiento:"+ persona.getFechaNacimiento()+"\",\n"+
+                "\t){\n" +
+                "        nombre,\n" +
+                "        correo\n" +
+                "    }\n" +
+                "}";
+        String query1="mutation {\n" +
+                "\tregistrarPersona(\n" +
+                "\t\tnombre: \""+persona.getNombre()+"\",\n" +
+                "\t\tcorreo: \""+persona.getCorreo()+"\",\n" +
+                "\t\tapellidoPaterno: \""+ persona.getApellidoPaterno()+"\",\n" +
+                "\t\tapellidoMaterno: \""+ persona.getApellidoMaterno()+"\",\n" +
+                "\t\tfechaNacimiento: \""+ persona.getFechaNacimiento()+"\",\n" +
+                "\t){\n" +
+                "        nombre,\n" +
+                "        correo\n" +
+                "    }\n" +
+                "}";
+        ResponseData data= new ResponseData();
+        ResponseEntity<ResponseData> response = restTemplate.postForEntity("http://localhost:8080/graphql", new HttpEntity<>(query1, headersSolicitud),ResponseData.class);
+        System.out.println("The response================="+response);
 
-        BaniPayBean baniPayBean = new BaniPayBean();
-//        try {
-//
-//            ResponseEntity<BaniPayBean> result = restTemplate.postForEntity(
-//                    "http://localhost:8080/graphql", httpTokenService, BaniPayBean.class);
-//
-//
-//
-//            if (result.getStatusCode() == HttpStatus.OK) {
-//
-//                baniPayBean = result.getBody();
-//            }else {
-//
-//
-//                enterezaBean.setCodeError("COD345");
-//                enterezaBean.setMsgError("Token no valido o inexistente");
-//
-//            }
-//
-//
-//        }catch(RestClientException e) {
-//            enterezaBean.setCodeError("COD345");
-//            enterezaBean.setMsgError("Servicio de autotizacion no disponible");
-//
-//        }
-        return baniPayBean;
+        if(response.getStatusCode()==HttpStatus.OK){
+            data=response.getBody();
+        }
+        ResponsePersona responsePersona= new ResponsePersona();
+        return ResponseEntity.ok(data);
+
 
     }
 }
